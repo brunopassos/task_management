@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { hashSync as bcryptHashSync, compareSync } from 'bcrypt';
 import { plainToInstance } from 'class-transformer';
 import { v4 as uuid } from 'uuid';
-import { UserDto } from './user.dto';
+import { UpdateUserDto, UserDto } from './user.dto';
 
 @Injectable()
 export class UsersService {
@@ -57,7 +57,7 @@ export class UsersService {
     return plainToInstance(UserDto, foundUser);
   }
 
-  update(id: string, user: UserDto): UserDto {
+  update(id: string, user: UpdateUserDto): UserDto {
     const userIndex = this.users.findIndex((u) => u.id === id);
 
     if (userIndex < 0) {
@@ -67,12 +67,16 @@ export class UsersService {
       );
     }
 
+    const existingUser = this.users[userIndex];
+
     const updatedUser: UserDto = {
-      id,
-      username: user.username,
-      password: bcryptHashSync(user.password, 10),
-      roles: user.roles,
-      company: user.company,
+      ...existingUser,
+      username: user.username ?? existingUser.username,
+      password: user.password
+        ? bcryptHashSync(user.password, 10)
+        : existingUser.password,
+      roles: user.roles ?? existingUser.roles,
+      company: user.company ?? existingUser.company,
     };
 
     this.users[userIndex] = updatedUser;

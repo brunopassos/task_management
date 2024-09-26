@@ -12,7 +12,7 @@ import { AuthGuard } from 'src/auth/auth.guard';
 import { Roles } from 'src/auth/roles/roles.decorator';
 import { RolesGuard } from 'src/auth/roles/roles.guard';
 import { UserRoleEnum } from 'src/auth/userInterface/user.interface';
-import { TaskDto } from './task.dto';
+import { CreateTaskDto, TaskDto, UpdateTaskDto } from './task.dto';
 import { TaskService } from './task.service';
 
 @UseGuards(AuthGuard)
@@ -21,7 +21,7 @@ export class TaskController {
   constructor(private readonly taskService: TaskService) {}
 
   @Post()
-  create(@Body() task: TaskDto): TaskDto {
+  create(@Body() task: CreateTaskDto): TaskDto {
     return this.taskService.create(task);
   }
 
@@ -31,7 +31,7 @@ export class TaskController {
   }
 
   @Patch('/:id')
-  update(@Body() task: TaskDto, @Param('id') id: string): TaskDto {
+  update(@Body() task: UpdateTaskDto, @Param('id') id: string): TaskDto {
     return this.taskService.update(id, task);
   }
 

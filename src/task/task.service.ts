@@ -1,14 +1,17 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { v4 as uuid } from 'uuid';
-import { TaskDto } from './task.dto';
+import { CreateTaskDto, TaskDto, UpdateTaskDto } from './task.dto';
 
 @Injectable()
 export class TaskService {
   private tasks: TaskDto[] = [];
-  create(newTask: TaskDto): TaskDto {
-    newTask.id = uuid();
-    this.tasks.push(newTask);
-    return newTask;
+  create(newTask: CreateTaskDto): TaskDto {
+    const task = {
+      ...newTask,
+      id: uuid(),
+    };
+    this.tasks.push(task);
+    return task;
   }
 
   findById(id: string): TaskDto {
@@ -23,7 +26,7 @@ export class TaskService {
     );
   }
 
-  update(id: string, task: TaskDto): TaskDto {
+  update(id: string, task: UpdateTaskDto): TaskDto {
     const taskIndex = this.tasks.findIndex((t) => t.id === id);
 
     if (taskIndex < 0) {
@@ -33,12 +36,14 @@ export class TaskService {
       );
     }
 
+    const existingTask = this.tasks[taskIndex];
+
     const updatedTask: TaskDto = {
-      id,
-      title: task.title,
-      description: task.description,
-      status: task.status,
-      expirationDate: task.expirationDate,
+      ...existingTask,
+      title: task.title ?? existingTask.title,
+      description: task.description ?? existingTask.description,
+      status: task.status ?? existingTask.status,
+      expirationDate: task.expirationDate ?? existingTask.expirationDate,
     };
 
     this.tasks[taskIndex] = updatedTask;
