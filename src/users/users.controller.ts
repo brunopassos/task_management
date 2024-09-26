@@ -6,7 +6,9 @@ import {
   Param,
   Patch,
   Post,
+  UseGuards,
 } from '@nestjs/common';
+import { AuthGuard } from 'src/auth/auth.guard';
 import { UserDto } from './user.dto';
 import { UsersService } from './users.service';
 
@@ -19,16 +21,19 @@ export class UsersController {
     return this.usersService.create(user);
   }
 
+  @UseGuards(AuthGuard)
   @Get('/:id')
   findById(@Param('id') id: string): UserDto {
     return this.usersService.findById(id);
   }
 
+  @UseGuards(AuthGuard)
   @Patch('/:id')
   update(@Body() user: UserDto, @Param('id') id: string): UserDto {
     return this.usersService.update(id, user);
   }
 
+  @UseGuards(AuthGuard)
   @Delete('/:id')
   remove(@Param('id') id: string) {
     this.usersService.remove(id);
