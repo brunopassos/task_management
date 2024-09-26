@@ -16,17 +16,18 @@ export class UserDto {
 }
 
 export class CreateUserDto {
-  id: string;
   @IsString()
   @IsNotEmpty()
   username: string;
 
   @IsString()
   @IsNotEmpty()
-  password: string;
+  company: string;
+
   @IsString()
   @IsNotEmpty()
-  company: string;
+  password: string;
+
   @IsArray()
   @IsNotEmpty()
   roles: UserRoleEnum[];

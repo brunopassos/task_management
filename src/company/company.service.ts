@@ -1,19 +1,47 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { UsersService } from 'src/users/users.service';
 import { v4 as uuid } from 'uuid';
-import { CompanyDto, CreateCompanyDto, UpdateCompanyDto } from './company.dto';
+import {
+  CompanyDto,
+  CreateCompanyWithAdminDto,
+  UpdateCompanyDto,
+} from './company.dto';
 
 @Injectable()
 export class CompanyService {
+  constructor(private readonly userService: UsersService) {}
   private readonly companies: CompanyDto[] = [];
+  private usersId: string[] = [];
 
-  create(newCompany: CreateCompanyDto) {
+  create(newCompany: CreateCompanyWithAdminDto): CompanyDto {
+    const companyId = uuid();
+
+    newCompany.users.forEach((u) => {
+      u.company = companyId;
+      const user = this.userService.create(u);
+      this.usersId.push(user.id);
+    });
+
     const company = {
       ...newCompany,
-      id: uuid(),
+      id: companyId,
+      users: this.usersId ?? [],
+      tasks: [],
     };
+
     this.companies.push(company);
+
     return company;
   }
+
+  // create(newCompany: CreateCompanyDto): CompanyDto {
+  //   const company = {
+  //     ...newCompany,
+  //     id: uuid(),
+  //   };
+  //   this.companies.push(company);
+  //   return company;
+  // }
 
   findById(id: string): CompanyDto {
     const foundCompany = this.companies.filter((c) => c.id === id);
