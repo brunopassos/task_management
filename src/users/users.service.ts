@@ -71,7 +71,7 @@ export class UsersService {
       id,
       username: user.username,
       password: bcryptHashSync(user.password, 10),
-      role: user.role,
+      roles: user.roles,
       company: user.company,
     };
 
