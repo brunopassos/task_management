@@ -2,23 +2,28 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { hashSync as bcryptHashSync, compareSync } from 'bcrypt';
 import { plainToInstance } from 'class-transformer';
 import { v4 as uuid } from 'uuid';
-import { UpdateUserDto, UserDto } from './user.dto';
+import { CreateUserDto, UpdateUserDto, UserDto } from './user.dto';
 
 @Injectable()
 export class UsersService {
   private readonly users: UserDto[] = [];
 
-  create(newUser: UserDto) {
+  create(newUser: CreateUserDto) {
     const foundUser = this.users.find((u) => u.username === newUser.username);
 
     if (foundUser) {
       throw new HttpException(`User already existis`, HttpStatus.BAD_REQUEST);
     }
 
-    newUser.id = uuid();
-    newUser.password = bcryptHashSync(newUser.password, 10);
-    this.users.push(newUser);
-    return plainToInstance(UserDto, newUser);
+    const user = {
+      ...newUser,
+      id: uuid(),
+      password: bcryptHashSync(newUser.password, 10),
+    };
+
+    this.users.push(user);
+    console.log(this.users);
+    return plainToInstance(UserDto, user);
   }
 
   findById(id: string): UserDto {
@@ -34,6 +39,7 @@ export class UsersService {
   }
 
   findUserByNameAndPassword(username: string, password: string): UserDto {
+    console.log(this.users);
     const foundUser = this.users.find((u) => u.username === username);
 
     const invalidCredentialsMessage = 'Invalid username or password!';
