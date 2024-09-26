@@ -1,15 +1,18 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { v4 as uuid } from 'uuid';
-import { CompanyDto } from './company.dto';
+import { CompanyDto, CreateCompanyDto, UpdateCompanyDto } from './company.dto';
 
 @Injectable()
 export class CompanyService {
   private readonly companies: CompanyDto[] = [];
 
-  create(newCompany: CompanyDto) {
-    newCompany.id = uuid();
-    this.companies.push(newCompany);
-    return newCompany;
+  create(newCompany: CreateCompanyDto) {
+    const company = {
+      ...newCompany,
+      id: uuid(),
+    };
+    this.companies.push(company);
+    return company;
   }
 
   findById(id: string): CompanyDto {
@@ -24,7 +27,7 @@ export class CompanyService {
     );
   }
 
-  update(id: string, company: CompanyDto): CompanyDto {
+  update(id: string, company: UpdateCompanyDto): CompanyDto {
     const companyIndex = this.companies.findIndex((c) => c.id === id);
 
     if (companyIndex < 0) {
@@ -34,11 +37,13 @@ export class CompanyService {
       );
     }
 
+    const existingCompany = this.companies[companyIndex];
+
     const updatedCompany: CompanyDto = {
-      id,
-      name: company.name,
-      tasks: company.tasks,
-      users: company.users,
+      ...existingCompany,
+      name: company.name ?? existingCompany.name,
+      users: company.users ?? existingCompany.users,
+      tasks: company.tasks ?? existingCompany.tasks,
     };
 
     this.companies[companyIndex] = updatedCompany;
