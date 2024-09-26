@@ -15,8 +15,8 @@ export class TaskController {
   constructor(private readonly taskService: TaskService) {}
 
   @Post()
-  create(@Body() task: TaskDto) {
-    this.taskService.create(task);
+  create(@Body() task: TaskDto): TaskDto {
+    return this.taskService.create(task);
   }
 
   @Get('/:id')
@@ -25,8 +25,8 @@ export class TaskController {
   }
 
   @Patch('/:id')
-  update(@Body() task: TaskDto, @Param('id') id: string) {
-    this.taskService.update(id, task);
+  update(@Body() task: TaskDto, @Param('id') id: string): TaskDto {
+    return this.taskService.update(id, task);
   }
 
   @Delete('/:id')
