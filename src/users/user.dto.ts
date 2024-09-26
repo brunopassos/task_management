@@ -1,4 +1,5 @@
 import { Exclude } from 'class-transformer';
+import { UserRoleEnum } from 'src/auth/userInterface/user.interface';
 
 export class UserDto {
   id: string;
@@ -7,5 +8,5 @@ export class UserDto {
   @Exclude()
   password: string;
   company: string;
-  role: 'admin' | 'user';
+  roles: UserRoleEnum[];
 }

@@ -9,6 +9,9 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from 'src/auth/auth.guard';
+import { Roles } from 'src/auth/roles/roles.decorator';
+import { RolesGuard } from 'src/auth/roles/roles.guard';
+import { UserRoleEnum } from 'src/auth/userInterface/user.interface';
 import { TaskDto } from './task.dto';
 import { TaskService } from './task.service';
 
@@ -32,6 +35,8 @@ export class TaskController {
     return this.taskService.update(id, task);
   }
 
+  @UseGuards(RolesGuard)
+  @Roles(UserRoleEnum.ADMIN)
   @Delete('/:id')
   remove(@Param('id') id: string) {
     this.taskService.remove(id);
