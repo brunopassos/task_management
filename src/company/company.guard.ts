@@ -18,14 +18,6 @@ export class CompanyGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
     const user = request.user;
 
-    // const path = request.route.path;
-    // const method = request.method;
-    // if (path === '/users' && (method === 'POST' || method === 'PATCH')) {
-    //   return true;
-    // }
-
-    console.log(user);
-
     if (!user.company) {
       throw new UnauthorizedException(
         'User is not associated with any company',

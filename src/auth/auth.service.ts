@@ -17,8 +17,8 @@ export class AuthService {
     );
   }
 
-  signIn(username: string, password: string): AuthResponseDto {
-    const foundUser = this.usersService.findUserByNameAndPassword(
+  async signIn(username: string, password: string): Promise<AuthResponseDto> {
+    const foundUser = await this.usersService.findUserByNameAndPassword(
       username,
       password,
     );

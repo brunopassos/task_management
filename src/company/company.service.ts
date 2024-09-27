@@ -1,5 +1,13 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+} from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { CompanyEntity } from 'src/db/entities/company.entity';
 import { UsersService } from 'src/users/users.service';
+import { Repository } from 'typeorm';
 import { v4 as uuid } from 'uuid';
 import {
   CompanyDto,
@@ -9,43 +17,47 @@ import {
 
 @Injectable()
 export class CompanyService {
-  constructor(private readonly userService: UsersService) {}
-  private readonly companies: CompanyDto[] = [];
+  constructor(
+    @InjectRepository(CompanyEntity)
+    private readonly companyRepository: Repository<CompanyEntity>,
+    private readonly userService: UsersService,
+  ) {}
   private usersId: string[] = [];
 
-  create(newCompany: CreateCompanyWithAdminDto): CompanyDto {
-    const companyId = uuid();
-
-    newCompany.users.forEach((u) => {
-      u.company = companyId;
-      const user = this.userService.create(u);
-      this.usersId.push(user.id);
+  async create(newCompany: CreateCompanyWithAdminDto): Promise<CompanyDto> {
+    const companyAlreadyExists = await this.companyRepository.findOne({
+      where: { name: newCompany.name },
     });
 
-    const company = {
-      ...newCompany,
-      id: companyId,
-      users: this.usersId ?? [],
-      tasks: [],
-    };
+    if (companyAlreadyExists) {
+      throw new ConflictException(
+        `Company ${newCompany.name} already registered!`,
+      );
+    }
 
-    this.companies.push(company);
+    const companyId = uuid();
+
+    const company = this.companyRepository.create({
+      name: newCompany.name,
+      id: companyId,
+    });
+
+    await this.companyRepository.save(company);
+
+    for (const user of newCompany.users) {
+      user.companyId = company.id;
+      await this.userService.create(user);
+    }
 
     return company;
   }
 
-  // create(newCompany: CreateCompanyDto): CompanyDto {
-  //   const company = {
-  //     ...newCompany,
-  //     id: uuid(),
-  //   };
-  //   this.companies.push(company);
-  //   return company;
-  // }
+  async findById(id: string): Promise<CompanyDto> {
+    const foundCompany = await this.companyRepository.findOne({
+      where: { id },
+    });
 
-  findById(id: string): CompanyDto {
-    const foundCompany = this.companies.filter((c) => c.id === id);
-    if (foundCompany.length) {
+    if (foundCompany) {
       return foundCompany[0];
     }
 
@@ -55,41 +67,40 @@ export class CompanyService {
     );
   }
 
-  update(id: string, company: UpdateCompanyDto): CompanyDto {
-    const companyIndex = this.companies.findIndex((c) => c.id === id);
+  async update(id: string, company: UpdateCompanyDto): Promise<CompanyDto> {
+    const foundCompany = await this.companyRepository.findOne({
+      where: { id },
+    });
 
-    if (companyIndex < 0) {
+    if (!foundCompany) {
       throw new HttpException(
         `Company with id ${id} not found`,
         HttpStatus.NOT_FOUND,
       );
     }
 
-    const existingCompany = this.companies[companyIndex];
-
     const updatedCompany: CompanyDto = {
-      ...existingCompany,
-      name: company.name ?? existingCompany.name,
-      users: company.users ?? existingCompany.users,
-      tasks: company.tasks ?? existingCompany.tasks,
+      ...foundCompany,
+      name: company.name ?? foundCompany.name,
     };
 
-    this.companies[companyIndex] = updatedCompany;
+    await this.companyRepository.save(updatedCompany);
 
     return updatedCompany;
   }
 
-  remove(id: string) {
-    const companyIndex = this.companies.findIndex((c) => c.id === id);
+  async remove(id: string) {
+    const foundCompany = await this.companyRepository.findOne({
+      where: { id },
+    });
 
-    if (companyIndex >= 0) {
-      this.companies.splice(companyIndex, 1);
-      return;
+    if (!foundCompany) {
+      throw new HttpException(
+        `Comapny with id ${id} not found`,
+        HttpStatus.NOT_FOUND,
+      );
     }
 
-    throw new HttpException(
-      `Comapny with id ${id} not found`,
-      HttpStatus.NOT_FOUND,
-    );
+    await this.companyRepository.delete(id);
   }
 }

@@ -22,22 +22,25 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post()
-  create(@Body() user: CreateUserDto): UserDto {
-    return this.usersService.create(user);
+  async create(@Body() user: CreateUserDto): Promise<UserDto> {
+    return await this.usersService.create(user);
   }
 
   @Get('/:id')
-  findById(@Param('id') id: string): UserDto {
-    return this.usersService.findById(id);
+  async findById(@Param('id') id: string): Promise<UserDto> {
+    return await this.usersService.findById(id);
   }
 
   @Patch('/:id')
-  update(@Body() user: UpdateUserDto, @Param('id') id: string): UserDto {
-    return this.usersService.update(id, user);
+  async update(
+    @Body() user: UpdateUserDto,
+    @Param('id') id: string,
+  ): Promise<UserDto> {
+    return await this.usersService.update(id, user);
   }
 
   @Delete('/:id')
-  remove(@Param('id') id: string) {
-    this.usersService.remove(id);
+  async remove(@Param('id') id: string) {
+    await this.usersService.remove(id);
   }
 }
