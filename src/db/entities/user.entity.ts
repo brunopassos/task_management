@@ -1,7 +1,15 @@
 import { UserRoleEnum } from 'src/auth/userInterface/user.interface';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { CompanyEntity } from './company.entity';
+import { TaskEntity } from './task.entity';
 
-@Entity({ name: 'user' })
+@Entity({ name: 'User' })
 export class UserEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -12,9 +20,12 @@ export class UserEntity {
   @Column({ type: 'varchar' })
   password: string;
 
-  @Column({ type: 'varchar' })
-  company: string;
+  @Column({ type: 'enum', enum: UserRoleEnum })
+  roles: UserRoleEnum;
 
-  @Column({ type: 'array' })
-  roles: UserRoleEnum[];
+  @ManyToOne(() => CompanyEntity, (company) => company.users, { eager: true })
+  company: CompanyEntity;
+
+  @OneToMany(() => TaskEntity, (task) => task.user)
+  tasks: TaskEntity[];
 }

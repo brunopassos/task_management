@@ -20,28 +20,33 @@ export class CompanyController {
   constructor(private readonly companysService: CompanyService) {}
 
   @Post()
-  create(@Body() company: CreateCompanyWithAdminDto): CompanyDto {
-    return this.companysService.create(company);
+  async create(
+    @Body() company: CreateCompanyWithAdminDto,
+  ): Promise<CompanyDto> {
+    return await this.companysService.create(company);
   }
 
   @UseGuards(AuthGuard, RolesGuard)
   @Roles(UserRoleEnum.ADMIN)
   @Get('/:id')
-  findById(@Param('id') id: string): CompanyDto {
-    return this.companysService.findById(id);
+  async findById(@Param('id') id: string): Promise<CompanyDto> {
+    return await this.companysService.findById(id);
   }
 
   @UseGuards(AuthGuard, RolesGuard)
   @Roles(UserRoleEnum.ADMIN)
   @Patch('/:id')
-  update(@Body() user: CompanyDto, @Param('id') id: string): CompanyDto {
-    return this.companysService.update(id, user);
+  async update(
+    @Body() user: CompanyDto,
+    @Param('id') id: string,
+  ): Promise<CompanyDto> {
+    return await this.companysService.update(id, user);
   }
 
   @UseGuards(AuthGuard, RolesGuard)
   @Roles(UserRoleEnum.ADMIN)
   @Delete('/:id')
-  remove(@Param('id') id: string) {
-    this.companysService.remove(id);
+  async remove(@Param('id') id: string): Promise<void> {
+    await this.companysService.remove(id);
   }
 }

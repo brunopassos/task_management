@@ -13,8 +13,6 @@ export class CreateCompanyWithAdminDto {
 export class CompanyDto {
   id: string;
   name: string;
-  users?: string[];
-  tasks?: string[];
 }
 export class CreateCompanyDto {
   @IsNotEmpty()

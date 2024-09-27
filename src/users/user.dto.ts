@@ -10,9 +10,9 @@ export class UserDto {
   @Exclude()
   password: string;
 
-  company: string;
+  companyId: string;
 
-  roles: UserRoleEnum[];
+  roles: UserRoleEnum;
 }
 
 export class CreateUserDto {
@@ -22,7 +22,7 @@ export class CreateUserDto {
 
   @IsString()
   @IsNotEmpty()
-  company: string;
+  companyId: string;
 
   @IsString()
   @IsNotEmpty()
@@ -30,7 +30,7 @@ export class CreateUserDto {
 
   @IsArray()
   @IsNotEmpty()
-  roles: UserRoleEnum[];
+  roles: UserRoleEnum;
 }
 
 export class UpdateUserDto {
@@ -38,5 +38,5 @@ export class UpdateUserDto {
 
   password?: string;
   company?: string;
-  roles?: UserRoleEnum[];
+  roles?: UserRoleEnum;
 }
