@@ -61,6 +61,10 @@ Obs: Caso o último comando apareça no terminal como FLUSHPRIVILEGES;, separe a
 pnpm run start:debug
 ```
 
+## 7. Ponto de partida
+
+O ponto de partida é a rota de criação de empresa, ela já gera a empresa com o usuário `admin` e também pode ser gerado vários usuários `admin` e vários `user`. A partir disso é possível fazer o login.
+
 ## 6. Documentação
 
 Entre no endereço `http://localhost:3000/api`
