@@ -1,7 +1,13 @@
-import { TaskStatusEnum } from 'src/task/task.dto';
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { CompanyEntity } from './company.entity';
 import { UserEntity } from './user.entity';
+
+
+export enum TaskStatusEnum {
+  PENDING = 'Pendente',
+  IN_PROGRESS = 'Em Progresso',
+  COMPLETED = 'Comcluída',
+}
 
 @Entity({ name: 'Task' })
 export class TaskEntity {
@@ -28,3 +34,5 @@ export class TaskEntity {
   @ManyToOne(() => UserEntity, (user) => user.tasks, { onDelete: 'CASCADE' })
   user: UserEntity;
 }
+
+
