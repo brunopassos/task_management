@@ -1,4 +1,3 @@
-import { UserRoleEnum } from 'src/auth/userInterface/user.interface';
 import {
   Column,
   Entity,
@@ -8,6 +7,11 @@ import {
 } from 'typeorm';
 import { CompanyEntity } from './company.entity';
 import { TaskEntity } from './task.entity';
+
+export enum UserRoleEnum {
+  ADMIN = 'admin',
+  USER = 'user',
+}
 
 @Entity({ name: 'User' })
 export class UserEntity {
